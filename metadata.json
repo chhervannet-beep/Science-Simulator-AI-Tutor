@@ -1,0 +1,6 @@
+{
+  "name": "Science Simulator & AI Tutor",
+  "description": "An interactive, highly graphical science simulator for Mathematics, Physics, Chemistry, and Biology, equipped with an intelligent Gemini AI Lab Assistant for explanations and interactive quizzes in Khmer and English.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
