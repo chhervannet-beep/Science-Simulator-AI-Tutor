@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { PhysicsSimState } from "../types";
-import { Play, RotateCcw, HelpCircle, Flame, Compass } from "lucide-react";
+import { Play, RotateCcw, HelpCircle, Flame, Compass, Info } from "lucide-react";
 import { playLaunchSound, playImpactSound } from "../utils/audio";
 
 interface PhysicsSimProps {
@@ -27,6 +27,14 @@ export default function PhysicsSim({ state, onChange, onExplainRequest }: Physic
   const [maxHeight, setMaxHeight] = useState<number>(0);
   const [maxRange, setMaxRange] = useState<number>(0);
   const [flightTime, setFlightTime] = useState<number>(0);
+  const [showStats, setShowStats] = useState<boolean>(true);
+
+  // Collapse stats on mobile screen widths
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.innerWidth < 768) {
+      setShowStats(false);
+    }
+  }, []);
 
   // Animation reference
   const requestRef = useRef<number | null>(null);
@@ -388,28 +396,42 @@ export default function PhysicsSim({ state, onChange, onExplainRequest }: Physic
         <canvas ref={canvasRef} className="absolute inset-0 w-full h-full block z-0" />
 
         {/* Telemetry Dashboard in top corner */}
-        <div className="absolute top-4 right-4 bg-black/70 backdrop-blur-xl border border-white/10 p-4 rounded-xl font-mono text-xs text-slate-300 space-y-1.5 shadow-2xl max-w-xs z-10">
-          <div className="font-bold text-cyan-400 border-b border-white/5 pb-1 mb-2 tracking-wider uppercase text-[10px]">លទ្ធផលវាស់វែង (Telemetry Logs)</div>
-          <div className="flex justify-between gap-6">
-            <span className="text-slate-500">មុំគប់ (Angle):</span>
-            <span className="text-white font-bold">{state.angle}°</span>
+        <div className="absolute top-4 right-4 bg-black/85 backdrop-blur-xl border border-white/10 p-2.5 md:p-4 rounded-xl font-mono text-xs text-slate-300 shadow-2xl max-w-xs z-10 transition-all duration-300 flex flex-col gap-1.5">
+          <div className="flex items-center justify-between gap-3 border-b border-white/5 pb-1 mb-1">
+            <button 
+              onClick={() => setShowStats(!showStats)} 
+              className="text-cyan-400 hover:text-cyan-300 p-1 rounded hover:bg-white/10 transition-all cursor-pointer flex items-center gap-1 text-[10px] font-mono font-bold"
+              title={showStats ? "លាក់លទ្ធផលវាស់វែង" : "បង្ហាញលទ្ធផលវាស់វែង"}
+            >
+              <Info className="w-3.5 h-3.5" />
+              {!showStats && <span className="font-sans">បង្ហាញលទ្ធផល</span>}
+            </button>
+            {showStats && <div className="font-bold text-cyan-400 tracking-wider uppercase text-[10px]">លទ្ធផលវាស់វែង</div>}
           </div>
-          <div className="flex justify-between gap-6">
-            <span className="text-slate-500">ល្បឿនដើម (v0):</span>
-            <span className="text-white font-bold">{state.velocity} m/s</span>
-          </div>
-          <div className="flex justify-between gap-6">
-            <span className="text-slate-500">កម្ពស់ខ្ពស់បំផុត (Max Height):</span>
-            <span className="text-rose-400 font-bold">{(maxHeight || ball?.y || 0).toFixed(2)} m</span>
-          </div>
-          <div className="flex justify-between gap-6">
-            <span className="text-slate-500">រយៈចម្ងាយបាញ់ (Range):</span>
-            <span className="text-cyan-400 font-bold">{(maxRange || ball?.x || 0).toFixed(2)} m</span>
-          </div>
-          <div className="flex justify-between gap-6">
-            <span className="text-slate-500">រយៈពេលហោះ (Time):</span>
-            <span className="text-purple-400 font-bold">{(flightTime || ball?.t || 0).toFixed(2)} s</span>
-          </div>
+          {showStats && (
+            <div className="space-y-1.5">
+              <div className="flex justify-between gap-6">
+                <span className="text-slate-500">មុំគប់ (Angle):</span>
+                <span className="text-white font-bold">{state.angle}°</span>
+              </div>
+              <div className="flex justify-between gap-6">
+                <span className="text-slate-500">ល្បឿនដើម (v0):</span>
+                <span className="text-white font-bold">{state.velocity} m/s</span>
+              </div>
+              <div className="flex justify-between gap-6">
+                <span className="text-slate-500">កម្ពស់ខ្ពស់បំផុត (Max Height):</span>
+                <span className="text-rose-400 font-bold">{(maxHeight || ball?.y || 0).toFixed(2)} m</span>
+              </div>
+              <div className="flex justify-between gap-6">
+                <span className="text-slate-500">រយៈចម្ងាយបាញ់ (Range):</span>
+                <span className="text-cyan-400 font-bold">{(maxRange || ball?.x || 0).toFixed(2)} m</span>
+              </div>
+              <div className="flex justify-between gap-6">
+                <span className="text-slate-500">រយៈពេលហោះ (Time):</span>
+                <span className="text-purple-400 font-bold">{(flightTime || ball?.t || 0).toFixed(2)} s</span>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Quick Presets Float Bottom Left */}

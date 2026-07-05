@@ -21,9 +21,17 @@ export default function ConicsSim({ state, onChange, onExplainRequest }: ConicsS
   const [autoRotate, setAutoRotate] = useState(true);
   const [isPlaying, setIsPlaying] = useState(true);
   const [animTime, setAnimTime] = useState(0);
+  const [showStats, setShowStats] = useState(true);
   
   const isDraggingRef = useRef(false);
   const lastMousePosRef = useRef({ x: 0, y: 0 });
+
+  // Collapse stats on mobile screen widths
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.innerWidth < 768) {
+      setShowStats(false);
+    }
+  }, []);
 
   // Handle animation timer
   useEffect(() => {
@@ -1591,38 +1599,52 @@ export default function ConicsSim({ state, onChange, onExplainRequest }: ConicsS
         <div className="absolute bottom-1/3 right-1/3 w-96 h-96 bg-purple-500/5 blur-[130px] rounded-full pointer-events-none"></div>
 
         {/* Dynamic information overlay */}
-        <div className="absolute top-4 right-4 flex flex-col gap-1.5 z-10 text-right pointer-events-none bg-black/80 p-4 rounded-xl border border-white/10 backdrop-blur-md max-w-[240px]">
-          <span className="text-[10px] font-bold text-cyan-400 uppercase tracking-wider">ព័ត៌មានផ្នែកកោនិក</span>
-          <div className="text-sm font-bold text-white tracking-wide">
-            {getConicName()}
+        <div className="absolute top-4 right-4 flex flex-col gap-1.5 z-10 text-right bg-black/85 p-2.5 md:p-3.5 rounded-xl border border-white/10 backdrop-blur-md max-w-[240px] transition-all duration-300 pointer-events-auto shadow-2xl">
+          <div className="flex items-center justify-between gap-3 border-b border-white/5 pb-1 mb-1">
+            <button 
+              onClick={() => setShowStats(!showStats)} 
+              className="text-cyan-400 hover:text-cyan-300 p-1 rounded hover:bg-white/10 transition-all cursor-pointer flex items-center gap-1 text-[10px] font-mono font-bold"
+              title={showStats ? "លាក់ព័ត៌មាន (Collapse)" : "បង្ហាញព័ត៌មាន (Expand)"}
+            >
+              <Info className="w-3.5 h-3.5" />
+              {!showStats && <span className="font-sans">បង្ហាញព័ត៌មាន</span>}
+            </button>
+            {showStats && <span className="text-[10px] font-bold text-cyan-400 uppercase tracking-wider">ព័ត៌មានផ្នែកកោនិក</span>}
           </div>
-          {state.appMode === "math" ? (
-            <div className="space-y-1 mt-1 text-left">
-              <div className="text-[10px] text-slate-400 font-mono">
-                 eccentricity (e) = <span className="text-yellow-400 font-semibold">{mathValues.eccentricity.toFixed(2)}</span>
+          {showStats && (
+            <>
+              <div className="text-sm font-bold text-white tracking-wide">
+                {getConicName()}
               </div>
-              <div className="text-[10px] text-slate-400 font-mono truncate">
-                 h = <span className="text-cyan-400">{state.h.toFixed(1)}</span>, k = <span className="text-cyan-400">{state.k.toFixed(1)}</span>
-              </div>
-              <div className="text-[10px] text-slate-400 font-mono">
-                 a = <span className="text-orange-400">{state.paramA.toFixed(1)}</span>{state.mode !== "circle" && state.mode !== "parabola" && (
-                  <> , b = <span className="text-orange-400">{state.paramB.toFixed(1)}</span></>
-                )}
-              </div>
-              <div className="h-[1px] bg-white/10 my-1.5"></div>
-              <div className="text-[10px] text-cyan-300 font-mono bg-cyan-950/40 p-1.5 rounded border border-cyan-800/20 truncate">
-                {mathValues.equation}
-              </div>
-            </div>
-          ) : (
-            <div className="text-left mt-1.5">
-              <span className="text-[9px] bg-orange-500/20 text-orange-300 px-1.5 py-0.5 rounded border border-orange-500/30 uppercase tracking-wider font-semibold">
-                កម្មវិធីអនុវត្ត
-              </span>
-              <p className="text-[11px] text-slate-300 mt-1 leading-relaxed">
-                {applications[state.mode].find((app) => app.id === state.selectedApp)?.desc}
-              </p>
-            </div>
+              {state.appMode === "math" ? (
+                <div className="space-y-1 mt-1 text-left">
+                  <div className="text-[10px] text-slate-400 font-mono">
+                     eccentricity (e) = <span className="text-yellow-400 font-semibold">{mathValues.eccentricity.toFixed(2)}</span>
+                  </div>
+                  <div className="text-[10px] text-slate-400 font-mono truncate">
+                     h = <span className="text-cyan-400">{state.h.toFixed(1)}</span>, k = <span className="text-cyan-400">{state.k.toFixed(1)}</span>
+                  </div>
+                  <div className="text-[10px] text-slate-400 font-mono">
+                     a = <span className="text-orange-400">{state.paramA.toFixed(1)}</span>{state.mode !== "circle" && state.mode !== "parabola" && (
+                      <> , b = <span className="text-orange-400">{state.paramB.toFixed(1)}</span></>
+                    )}
+                  </div>
+                  <div className="h-[1px] bg-white/10 my-1.5"></div>
+                  <div className="text-[10px] text-cyan-300 font-mono bg-cyan-950/40 p-1.5 rounded border border-cyan-800/20 truncate">
+                    {mathValues.equation}
+                  </div>
+                </div>
+              ) : (
+                <div className="text-left mt-1.5">
+                  <span className="text-[9px] bg-orange-500/20 text-orange-300 px-1.5 py-0.5 rounded border border-orange-500/30 uppercase tracking-wider font-semibold">
+                    កម្មវិធីអនុវត្ត
+                  </span>
+                  <p className="text-[11px] text-slate-300 mt-1 leading-relaxed">
+                    {applications[state.mode].find((app) => app.id === state.selectedApp)?.desc}
+                  </p>
+                </div>
+              )}
+            </>
           )}
         </div>
 

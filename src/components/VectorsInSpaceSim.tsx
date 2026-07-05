@@ -18,8 +18,16 @@ export default function VectorsInSpaceSim({ state, onChange, onExplainRequest }:
   const [rotation, setRotation] = useState({ alpha: 42, beta: 20 });
   const [zoom, setZoom] = useState(1.15);
   const [autoRotate, setAutoRotate] = useState(true);
+  const [showStats, setShowStats] = useState(true);
   const isDraggingRef = useRef(false);
   const lastMousePosRef = useRef({ x: 0, y: 0 });
+
+  // Collapse stats panel on mobile device screens automatically
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.innerWidth < 768) {
+      setShowStats(false);
+    }
+  }, []);
 
   // Handle auto-rotation animation
   useEffect(() => {
@@ -988,19 +996,33 @@ export default function VectorsInSpaceSim({ state, onChange, onExplainRequest }:
         <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-orange-500/5 blur-[120px] rounded-full pointer-events-none"></div>
 
         {/* Dynamic visual parameters floating overlay */}
-        <div className="absolute top-4 right-4 flex flex-col gap-1.5 z-10 text-right pointer-events-none bg-black/75 p-3.5 rounded-xl border border-white/10 backdrop-blur-md max-w-[220px]">
-          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">កូអរដោនេ និងប៉ារ៉ាម៉ែត្រ</span>
-          <div className="text-xs text-cyan-400 font-mono font-bold">
-            {state.mode === "graphics" ? " Normal N" : " Vector A"} = ({state.xVal.toFixed(1)}, {state.yVal.toFixed(1)}, {state.is3d ? state.zVal.toFixed(1) : "0.0"})
+        <div className="absolute top-4 right-4 flex flex-col gap-1.5 z-10 text-right bg-black/85 p-2.5 md:p-3.5 rounded-xl border border-white/10 backdrop-blur-md max-w-[220px] transition-all duration-300 pointer-events-auto shadow-2xl">
+          <div className="flex items-center justify-between gap-3 border-b border-white/5 pb-1 mb-1">
+            <button 
+              onClick={() => setShowStats(!showStats)} 
+              className="text-cyan-400 hover:text-cyan-300 p-1 rounded hover:bg-white/10 transition-all cursor-pointer flex items-center gap-1 text-[10px] font-mono font-bold"
+              title={showStats ? "លាក់ប៉ារ៉ាម៉ែត្រ (Collapse)" : "បង្ហាញប៉ារ៉ាម៉ែត្រ (Expand)"}
+            >
+              <Info className="w-3.5 h-3.5" />
+              {!showStats && <span className="font-sans">បង្ហាញព័ត៌មាន</span>}
+            </button>
+            {showStats && <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">កូអរដោនេ</span>}
           </div>
-          <div className="text-xs text-orange-400 font-mono font-bold">
-            {state.mode === "graphics" ? " Light Vector L" : " Vector B"} = ({vectorB.x.toFixed(1)}, {vectorB.y.toFixed(1)}, {vectorB.z.toFixed(1)})
-          </div>
-          <div className="h-[1px] bg-slate-800 my-1"></div>
-          <span className="text-[9px] text-slate-400 font-mono">ប្រវែង ||A|| ≈ {normA.toFixed(2)}</span>
-          <span className="text-[9px] text-slate-400 font-mono">ប្រវែង ||B|| ≈ {normB.toFixed(2)}</span>
-          {state.mode === "graphics" && (
-            <span className="text-[9px] text-yellow-400 font-mono font-semibold">N · L (Cosine θ) ≈ {(dotProduct / (normA * normB || 1)).toFixed(2)}</span>
+          {showStats && (
+            <>
+              <div className="text-xs text-cyan-400 font-mono font-bold">
+                {state.mode === "graphics" ? " Normal N" : " Vector A"} = ({state.xVal.toFixed(1)}, {state.yVal.toFixed(1)}, {state.is3d ? state.zVal.toFixed(1) : "0.0"})
+              </div>
+              <div className="text-xs text-orange-400 font-mono font-bold">
+                {state.mode === "graphics" ? " Light Vector L" : " Vector B"} = ({vectorB.x.toFixed(1)}, {vectorB.y.toFixed(1)}, {vectorB.z.toFixed(1)})
+              </div>
+              <div className="h-[1px] bg-slate-800/80 my-1"></div>
+              <span className="text-[9px] text-slate-400 font-mono block">ប្រវែង ||A|| ≈ {normA.toFixed(2)}</span>
+              <span className="text-[9px] text-slate-400 font-mono block">ប្រវែង ||B|| ≈ {normB.toFixed(2)}</span>
+              {state.mode === "graphics" && (
+                <span className="text-[9px] text-yellow-400 font-mono font-semibold block">N · L (Cosine θ) ≈ {(dotProduct / (normA * normB || 1)).toFixed(2)}</span>
+              )}
+            </>
           )}
         </div>
 
