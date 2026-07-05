@@ -15,7 +15,9 @@ import {
   DifferentialEqSimState,
   DifferentialEq2SimState,
   ProbabilitySimState,
-  FunctionVariationSimState
+  FunctionVariationSimState,
+  VectorsInSpaceSimState,
+  ConicsSimState
 } from "./types";
 import MathSim from "./components/MathSim";
 import PhysicsSim from "./components/PhysicsSim";
@@ -32,6 +34,8 @@ import DifferentialEqSim from "./components/DifferentialEqSim";
 import DifferentialEq2Sim from "./components/DifferentialEq2Sim";
 import ProbabilitySim from "./components/ProbabilitySim";
 import FunctionVariationSim from "./components/FunctionVariationSim";
+import VectorsInSpaceSim from "./components/VectorsInSpaceSim";
+import ConicsSim from "./components/ConicsSim";
 import AiAssistant from "./components/AiAssistant";
 import { 
   Compass, 
@@ -45,12 +49,16 @@ import {
   Layers,
   TrendingUp,
   Rocket,
-  FunctionSquare
+  FunctionSquare,
+  Volume2,
+  VolumeX
 } from "lucide-react";
+import { useSoundEnabled, setSoundEnabled, playClickSound } from "./utils/audio";
 
 export default function App() {
+  const [soundEnabled] = useSoundEnabled();
   const [activeSubject, setActiveSubject] = useState<SubjectType>("math");
-  const [mathSubTopic, setMathSubTopic] = useState<"trig" | "complex" | "limits" | "continuity" | "derivative" | "derivative_app" | "integral" | "definite_integral" | "differential_eq" | "differential_eq2" | "probability" | "function_variation">("trig");
+  const [mathSubTopic, setMathSubTopic] = useState<"trig" | "complex" | "limits" | "continuity" | "derivative" | "derivative_app" | "integral" | "definite_integral" | "differential_eq" | "differential_eq2" | "probability" | "function_variation" | "vectors_in_space" | "conics">("trig");
   const [triggerExplainCount, setTriggerExplainCount] = useState<number>(0);
 
   // 1. Mathematics Initial State
@@ -181,6 +189,28 @@ export default function App() {
     is3d: false,
   });
 
+  // 16. Vectors in Space Initial State
+  const [vectorsInSpaceState, setVectorsInSpaceState] = useState<VectorsInSpaceSimState>({
+    mode: "engineering",
+    xVal: 4.0,
+    yVal: 3.0,
+    zVal: 5.0,
+    param2: 1.0,
+    is3d: true,
+  });
+
+  // 17. Conics Initial State
+  const [conicsState, setConicsState] = useState<ConicsSimState>({
+    mode: "circle",
+    paramA: 4.0,
+    paramB: 3.0,
+    h: 0.0,
+    k: 0.0,
+    is3d: false,
+    appMode: "math",
+    selectedApp: "wheel"
+  });
+
   // Get active simulation parameters for AI context
   const getActiveSimulationData = () => {
     switch (activeSubject) {
@@ -196,6 +226,8 @@ export default function App() {
         if (mathSubTopic === "differential_eq2") return differentialEq2State;
         if (mathSubTopic === "probability") return probabilityState;
         if (mathSubTopic === "function_variation") return functionVariationState;
+        if (mathSubTopic === "vectors_in_space") return vectorsInSpaceState;
+        if (mathSubTopic === "conics") return conicsState;
         return derivativeState;
       case "physics":
         return physicsState;
@@ -247,13 +279,45 @@ export default function App() {
               <span>ផ្លាស់ប្តូរតម្លៃស្លាយដឺ (Sliders) រួចចុចពន្យល់ដើម្បីឱ្យគ្រូ AI វិភាគ</span>
             </div>
 
+            {/* Global Sound Setting Toggle */}
+            <button
+              id="btn-toggle-sound"
+              onClick={() => {
+                const nextSoundState = !soundEnabled;
+                setSoundEnabled(nextSoundState);
+                if (nextSoundState) {
+                  setTimeout(() => {
+                    playClickSound();
+                  }, 50);
+                }
+              }}
+              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl border text-xs font-semibold transition-all duration-300 cursor-pointer ${
+                soundEnabled
+                  ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/20 hover:border-emerald-500/50 shadow-[0_0_12px_rgba(16,185,129,0.15)]"
+                  : "bg-slate-950/60 text-slate-400 border-slate-800/80 hover:bg-slate-900 hover:text-slate-300"
+              }`}
+              title={soundEnabled ? "បិទសំឡេង (Disable sound effects)" : "បើកសំឡេង (Enable sound effects)"}
+            >
+              {soundEnabled ? (
+                <>
+                  <Volume2 className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
+                  <span>សំឡេង៖ បើក (ON)</span>
+                </>
+              ) : (
+                <>
+                  <VolumeX className="w-3.5 h-3.5 text-slate-500" />
+                  <span>សំឡេង៖ បិទ (OFF)</span>
+                </>
+              )}
+            </button>
+
             <div className="flex items-center gap-3 bg-white/5 px-3 py-1.5 rounded-xl border border-white/10">
               <div className="text-right">
-                <p className="text-xs font-semibold text-white">លោកគ្រូ វណ្ណដា</p>
-                <p className="text-[10px] text-slate-500">អ្នកសម្របសម្រួល</p>
+                <p className="text-xs font-semibold text-white">លោកគ្រូ ឆយ សុវ៉ាន់ណេត</p>
+                <p className="text-[10px] text-slate-400 font-mono">០១៦ ៥៦៧ ៤៣៧ / ០៨៥ ៥៧៧៧ ៨៥</p>
               </div>
-              <div className="w-8 h-8 rounded-full bg-slate-800 border border-white/20 flex items-center justify-center text-xs font-bold text-cyan-400 font-mono">
-                VD
+              <div className="w-8 h-8 rounded-full bg-slate-800 border border-white/20 flex items-center justify-center text-xs font-bold text-cyan-400">
+                ឆស
               </div>
             </div>
           </div>
@@ -462,6 +526,23 @@ export default function App() {
               <span className="text-[8px] bg-cyan-500/20 text-cyan-300 px-1 py-0.2 rounded border border-cyan-500/30 font-mono tracking-wider">3D/2D</span>
             </button>
             <button
+              id="subtab-conics"
+              onClick={() => setMathSubTopic("conics")}
+              className={`flex items-center gap-2 px-4 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 border ${
+                mathSubTopic === "conics"
+                  ? "bg-amber-500/30 text-amber-300 border-amber-400/40 shadow-[0_0_12px_rgba(245,158,11,0.2)]"
+                  : "bg-transparent text-slate-300 border-amber-500/40 hover:text-white hover:bg-white/5 hover:border-amber-500/60 shadow-[0_0_8px_rgba(245,158,11,0.25)] animate-pulse"
+              }`}
+            >
+              <Layers className="w-3.5 h-3.5 text-amber-400" />
+              <span>កោនិក (Conic Sections)</span>
+              <span className="flex h-1.5 w-1.5 relative">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-amber-500"></span>
+              </span>
+              <span className="text-[8px] bg-amber-500/20 text-amber-300 px-1 py-0.2 rounded border border-amber-500/30 font-mono tracking-wider">3D/2D</span>
+            </button>
+            <button
               id="subtab-function-variation"
               onClick={() => setMathSubTopic("function_variation")}
               className={`flex items-center gap-2 px-4 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 border ${
@@ -472,6 +553,23 @@ export default function App() {
             >
               <TrendingUp className="w-3.5 h-3.5 text-yellow-400" />
               <span>សិក្សាអថេរភាព និងក្រាប (Variation & Graphing)</span>
+              <span className="flex h-1.5 w-1.5 relative">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-yellow-500"></span>
+              </span>
+              <span className="text-[8px] bg-yellow-500/20 text-yellow-300 px-1 py-0.2 rounded border border-yellow-500/30 font-mono tracking-wider">3D/2D</span>
+            </button>
+            <button
+              id="subtab-vectors-in-space"
+              onClick={() => setMathSubTopic("vectors_in_space")}
+              className={`flex items-center gap-2 px-4 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 border ${
+                mathSubTopic === "vectors_in_space"
+                  ? "bg-cyan-500/30 text-cyan-300 border-cyan-400/40 shadow-[0_0_12px_rgba(6,182,212,0.2)]"
+                  : "bg-transparent text-slate-300 border-yellow-500/40 hover:text-white hover:bg-white/5 hover:border-yellow-500/60 shadow-[0_0_8px_rgba(234,179,8,0.25)] animate-pulse"
+              }`}
+            >
+              <Rocket className="w-3.5 h-3.5 text-yellow-400 animate-bounce" />
+              <span>វិចទ័រក្នុងលំហ (Vectors in Space)</span>
               <span className="flex h-1.5 w-1.5 relative">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-yellow-500"></span>
@@ -574,6 +672,20 @@ export default function App() {
                 onExplainRequest={handleExplainRequest} 
               />
             )}
+            {activeSubject === "math" && mathSubTopic === "vectors_in_space" && (
+              <VectorsInSpaceSim 
+                state={vectorsInSpaceState} 
+                onChange={setVectorsInSpaceState} 
+                onExplainRequest={handleExplainRequest} 
+              />
+            )}
+            {activeSubject === "math" && mathSubTopic === "conics" && (
+              <ConicsSim 
+                state={conicsState} 
+                onChange={setConicsState} 
+                onExplainRequest={handleExplainRequest} 
+              />
+            )}
             
             {activeSubject === "physics" && (
               <PhysicsSim 
@@ -616,6 +728,10 @@ export default function App() {
                   ? "probability"
                   : activeSubject === "math" && mathSubTopic === "function_variation"
                   ? "function_variation"
+                  : activeSubject === "math" && mathSubTopic === "vectors_in_space"
+                  ? "vectors_in_space"
+                  : activeSubject === "math" && mathSubTopic === "conics"
+                  ? "conics"
                   : activeSubject
               } 
               simulationData={getActiveSimulationData()} 

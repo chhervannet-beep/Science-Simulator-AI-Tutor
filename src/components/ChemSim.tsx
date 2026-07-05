@@ -1,6 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
 import { ChemSimState } from "../types";
 import { Plus, Minus, HelpCircle, Atom, ShieldAlert, ShieldCheck } from "lucide-react";
+import { 
+  playAtomIncrementSound, 
+  playAtomDecrementSound, 
+  playStableChordSound, 
+  playUnstableWarningSound 
+} from "../utils/audio";
 
 interface ChemSimProps {
   state: ChemSimState;
@@ -241,9 +247,46 @@ export default function ChemSim({ state, onChange, onExplainRequest }: ChemSimPr
     };
   }, [state, electronAngle]);
 
+  const checkStability = (protons: number, neutrons: number) => {
+    if (protons === 0) return true;
+    const ratio = neutrons / protons;
+    if (protons === 1) {
+      return neutrons <= 2;
+    }
+    return ratio >= 0.8 && ratio <= 1.4;
+  };
+
   const updateParticleCount = (key: keyof ChemSimState, delta: number) => {
     const val = Math.max(0, Math.min(12, state[key] + delta)); // restrict to 12 for clean Bohr modeling visualization
-    onChange({ ...state, [key]: val });
+    if (val === state[key]) return; // no change
+    
+    const nextState = { ...state, [key]: val };
+    onChange(nextState);
+
+    // Play increment or decrement audio cue
+    if (delta > 0) {
+      playAtomIncrementSound();
+    } else {
+      playAtomDecrementSound();
+    }
+
+    // Check if the stability of the isotope shifted
+    const wasStable = checkStability(state.protons, state.neutrons);
+    const isNowStable = checkStability(nextState.protons, nextState.neutrons);
+
+    if (nextState.protons > 0 && wasStable !== isNowStable) {
+      if (isNowStable) {
+        // Newly stable isotope! Play pleasant harmonic major chord
+        setTimeout(() => {
+          playStableChordSound();
+        }, 150);
+      } else {
+        // Newly unstable/radioactive! Play pulsing warning hum
+        setTimeout(() => {
+          playUnstableWarningSound();
+        }, 150);
+      }
+    }
   };
 
   return (

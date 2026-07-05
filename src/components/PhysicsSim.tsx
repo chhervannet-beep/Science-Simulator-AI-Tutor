@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { PhysicsSimState } from "../types";
 import { Play, RotateCcw, HelpCircle, Flame, Compass } from "lucide-react";
+import { playLaunchSound, playImpactSound } from "../utils/audio";
 
 interface PhysicsSimProps {
   state: PhysicsSimState;
@@ -76,6 +77,7 @@ export default function PhysicsSim({ state, onChange, onExplainRequest }: Physic
         setMaxRange(currentBall.x);
         setFlightTime(currentBall.t);
         setBall(null);
+        playImpactSound();
       } else {
         setBall({ ...currentBall });
         setTrail([...currentTrail]);
@@ -325,6 +327,7 @@ export default function PhysicsSim({ state, onChange, onExplainRequest }: Physic
     setTrail([initialBall]);
     setBall(initialBall);
     setIsLaunching(true);
+    playLaunchSound();
   };
 
   const handleReset = () => {

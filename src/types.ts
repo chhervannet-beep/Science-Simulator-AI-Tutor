@@ -125,6 +125,26 @@ export interface FunctionVariationSimState {
   is3d: boolean;
 }
 
+export interface VectorsInSpaceSimState {
+  mode: "engineering" | "motion" | "graphics" | "robotics" | "calculus" | "algebraic";
+  xVal: number; // X coordinate of Vector A
+  yVal: number; // Y coordinate of Vector A
+  zVal: number; // Z coordinate of Vector A
+  param2: number; // Load multiplier, speed, or other controls
+  is3d: boolean;
+}
+
+export interface ConicsSimState {
+  mode: "circle" | "ellipse" | "parabola" | "hyperbola";
+  paramA: number; // primary scale (e.g. radius R, semi-major a, or focal parameter p)
+  paramB: number; // secondary scale (e.g. semi-minor b, or hyperbola parameter b)
+  h: number;      // horizontal offset of center/vertex
+  k: number;      // vertical offset of center/vertex
+  is3d: boolean;  // toggle 3D intersection vs 2D graph view
+  appMode: "math" | "realworld"; // view style: standard math vs real world interactive application
+  selectedApp: string; // which real-world application is active
+}
+
 
 
 
