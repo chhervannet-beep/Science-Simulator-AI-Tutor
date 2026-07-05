@@ -1,4 +1,4 @@
-export type SubjectType = "math" | "physics" | "chemistry" | "biology" | "complex" | "limits" | "continuity" | "derivative";
+export type SubjectType = "math" | "physics" | "chemistry" | "biology" | "complex" | "limits" | "continuity" | "derivative" | "integral" | "definite_integral" | "differential_eq" | "differential_eq2";
 
 export interface ExplanationResponse {
   explanation: string;
@@ -79,6 +79,37 @@ export interface DerivativeSimState {
   is3d: boolean; // toggle for 2D vs 3D representation
   activeSimulation: string; // sub-selection name if any
 }
+
+export interface DerivativeAppSimState {
+  mode: "optimization" | "motion" | "economics" | "geometry";
+  xVal: number;
+  param2: number;
+}
+
+export interface IntegralSimState {
+  mode: "foundation" | "physics" | "engineering" | "economics";
+  xVal: number;
+  param2: number;
+}
+
+export interface DefiniteIntegralSimState {
+  mode: "area" | "volume" | "physics" | "engineering" | "economics";
+  xVal: number;
+  param2: number;
+}
+
+export interface DifferentialEqSimState {
+  mode: "why_learn" | "forms" | "population" | "cooling" | "circuits" | "motion";
+  xVal: number;
+  param2: number;
+}
+
+export interface DifferentialEq2SimState {
+  mode: "concept" | "spring_mass" | "rlc_circuit" | "wave";
+  xVal: number; // For example, damping coefficient
+  param2: number;
+}
+
 
 
 

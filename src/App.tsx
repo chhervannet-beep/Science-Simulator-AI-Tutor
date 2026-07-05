@@ -8,7 +8,12 @@ import {
   ComplexSimState,
   LimitsSimState,
   ContinuitySimState,
-  DerivativeSimState
+  DerivativeSimState,
+  DerivativeAppSimState,
+  IntegralSimState,
+  DefiniteIntegralSimState,
+  DifferentialEqSimState,
+  DifferentialEq2SimState
 } from "./types";
 import MathSim from "./components/MathSim";
 import PhysicsSim from "./components/PhysicsSim";
@@ -18,6 +23,11 @@ import ComplexSim from "./components/ComplexSim";
 import LimitsSim from "./components/LimitsSim";
 import ContinuitySim from "./components/ContinuitySim";
 import DerivativeSim from "./components/DerivativeSim";
+import DerivativeAppSim from "./components/DerivativeAppSim";
+import IntegralSim from "./components/IntegralSim";
+import DefiniteIntegralSim from "./components/DefiniteIntegralSim";
+import DifferentialEqSim from "./components/DifferentialEqSim";
+import DifferentialEq2Sim from "./components/DifferentialEq2Sim";
 import AiAssistant from "./components/AiAssistant";
 import { 
   Compass, 
@@ -29,12 +39,14 @@ import {
   Sparkles,
   Info,
   Layers,
-  TrendingUp
+  TrendingUp,
+  Rocket,
+  FunctionSquare
 } from "lucide-react";
 
 export default function App() {
   const [activeSubject, setActiveSubject] = useState<SubjectType>("math");
-  const [mathSubTopic, setMathSubTopic] = useState<"trig" | "complex" | "limits" | "continuity" | "derivative">("trig");
+  const [mathSubTopic, setMathSubTopic] = useState<"trig" | "complex" | "limits" | "continuity" | "derivative" | "derivative_app" | "integral" | "definite_integral" | "differential_eq" | "differential_eq2">("trig");
   const [triggerExplainCount, setTriggerExplainCount] = useState<number>(0);
 
   // 1. Mathematics Initial State
@@ -113,6 +125,41 @@ export default function App() {
     activeSimulation: "car"
   });
 
+  // 9. Derivative Apps Initial State
+  const [derivativeAppState, setDerivativeAppState] = useState<DerivativeAppSimState>({
+    mode: "optimization",
+    xVal: 50,
+    param2: 1.0,
+  });
+
+  // 10. Integral Apps Initial State
+  const [integralState, setIntegralState] = useState<IntegralSimState>({
+    mode: "foundation",
+    xVal: 50,
+    param2: 1.0,
+  });
+
+  // 11. Definite Integral Apps Initial State
+  const [definiteIntegralState, setDefiniteIntegralState] = useState<DefiniteIntegralSimState>({
+    mode: "area",
+    xVal: 50,
+    param2: 1.0,
+  });
+
+  // 12. Differential Eq Initial State
+  const [differentialEqState, setDifferentialEqState] = useState<DifferentialEqSimState>({
+    mode: "why_learn",
+    xVal: 50,
+    param2: 1.0,
+  });
+
+  // 13. Differential Eq 2 Initial State
+  const [differentialEq2State, setDifferentialEq2State] = useState<DifferentialEq2SimState>({
+    mode: "concept",
+    xVal: 50,
+    param2: 1.0,
+  });
+
   // Get active simulation parameters for AI context
   const getActiveSimulationData = () => {
     switch (activeSubject) {
@@ -121,6 +168,11 @@ export default function App() {
         if (mathSubTopic === "complex") return complexState;
         if (mathSubTopic === "limits") return limitsState;
         if (mathSubTopic === "continuity") return continuityState;
+        if (mathSubTopic === "derivative_app") return derivativeAppState;
+        if (mathSubTopic === "integral") return integralState;
+        if (mathSubTopic === "definite_integral") return definiteIntegralState;
+        if (mathSubTopic === "differential_eq") return differentialEqState;
+        if (mathSubTopic === "differential_eq2") return differentialEq2State;
         return derivativeState;
       case "physics":
         return physicsState;
@@ -309,6 +361,66 @@ export default function App() {
               <TrendingUp className="w-3.5 h-3.5 text-yellow-400" />
               ដេរីវេនៃអនុគមន៍ (Derivatives of Functions) ✨
             </button>
+            <button
+              id="subtab-derivative-app"
+              onClick={() => setMathSubTopic("derivative_app")}
+              className={`flex items-center gap-1.5 px-4 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 border ${
+                mathSubTopic === "derivative_app"
+                  ? "bg-emerald-500/30 text-emerald-300 border-emerald-400/40 shadow-[0_0_12px_rgba(16,185,129,0.2)]"
+                  : "bg-transparent text-slate-300 border-transparent hover:text-white hover:bg-white/5 hover:border-emerald-500/60"
+              }`}
+            >
+              <Rocket className="w-3.5 h-3.5 text-emerald-400" />
+              អនុវត្តន៍ដេរីវេ (Applications of Derivatives)
+            </button>
+            <button
+              id="subtab-integral"
+              onClick={() => setMathSubTopic("integral")}
+              className={`flex items-center gap-1.5 px-4 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 border ${
+                mathSubTopic === "integral"
+                  ? "bg-indigo-500/30 text-indigo-300 border-indigo-400/40 shadow-[0_0_12px_rgba(99,102,241,0.2)]"
+                  : "bg-transparent text-slate-300 border-transparent hover:text-white hover:bg-white/5 hover:border-indigo-500/60"
+              }`}
+            >
+              <Activity className="w-3.5 h-3.5 text-indigo-400" />
+              អាំងតេក្រាលមិនកំណត់ (Indefinite Integrals)
+            </button>
+            <button
+              id="subtab-definite-integral"
+              onClick={() => setMathSubTopic("definite_integral")}
+              className={`flex items-center gap-1.5 px-4 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 border ${
+                mathSubTopic === "definite_integral"
+                  ? "bg-cyan-500/30 text-cyan-300 border-cyan-400/40 shadow-[0_0_12px_rgba(34,211,238,0.2)]"
+                  : "bg-transparent text-slate-300 border-transparent hover:text-white hover:bg-white/5 hover:border-cyan-500/60"
+              }`}
+            >
+              <FunctionSquare className="w-3.5 h-3.5 text-cyan-400" />
+              អាំងតេក្រាលកំណត់ (Definite Integrals)
+            </button>
+            <button
+              id="subtab-differential-eq"
+              onClick={() => setMathSubTopic("differential_eq")}
+              className={`flex items-center gap-1.5 px-4 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 border ${
+                mathSubTopic === "differential_eq"
+                  ? "bg-fuchsia-500/30 text-fuchsia-300 border-fuchsia-400/40 shadow-[0_0_12px_rgba(217,70,239,0.2)]"
+                  : "bg-transparent text-slate-300 border-transparent hover:text-white hover:bg-white/5 hover:border-fuchsia-500/60"
+              }`}
+            >
+              <Activity className="w-3.5 h-3.5 text-fuchsia-400" />
+              សមីការឌីផេរ៉ង់ស្យែល (Differential Eq)
+            </button>
+            <button
+              id="subtab-differential-eq2"
+              onClick={() => setMathSubTopic("differential_eq2")}
+              className={`flex items-center gap-1.5 px-4 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 border ${
+                mathSubTopic === "differential_eq2"
+                  ? "bg-rose-500/30 text-rose-300 border-rose-400/40 shadow-[0_0_12px_rgba(244,63,94,0.2)]"
+                  : "bg-transparent text-slate-300 border-transparent hover:text-white hover:bg-white/5 hover:border-rose-500/60"
+              }`}
+            >
+              <Activity className="w-3.5 h-3.5 text-rose-400" />
+              សមីការឌីផេរ៉ង់ស្យែលទី២ (Differential Eq 2)
+            </button>
           </div>
         )}
 
@@ -353,6 +465,41 @@ export default function App() {
               <DerivativeSim 
                 state={derivativeState} 
                 onChange={setDerivativeState} 
+                onExplainRequest={handleExplainRequest} 
+              />
+            )}
+            {activeSubject === "math" && mathSubTopic === "derivative_app" && (
+              <DerivativeAppSim 
+                state={derivativeAppState} 
+                onChange={setDerivativeAppState} 
+                onExplainRequest={handleExplainRequest} 
+              />
+            )}
+            {activeSubject === "math" && mathSubTopic === "integral" && (
+              <IntegralSim 
+                state={integralState} 
+                onChange={setIntegralState} 
+                onExplainRequest={handleExplainRequest} 
+              />
+            )}
+            {activeSubject === "math" && mathSubTopic === "definite_integral" && (
+              <DefiniteIntegralSim 
+                state={definiteIntegralState} 
+                onChange={setDefiniteIntegralState} 
+                onExplainRequest={handleExplainRequest} 
+              />
+            )}
+            {activeSubject === "math" && mathSubTopic === "differential_eq" && (
+              <DifferentialEqSim 
+                state={differentialEqState} 
+                onChange={setDifferentialEqState} 
+                onExplainRequest={handleExplainRequest} 
+              />
+            )}
+            {activeSubject === "math" && mathSubTopic === "differential_eq2" && (
+              <DifferentialEq2Sim 
+                state={differentialEq2State} 
+                onChange={setDifferentialEq2State} 
                 onExplainRequest={handleExplainRequest} 
               />
             )}
