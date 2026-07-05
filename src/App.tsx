@@ -13,7 +13,9 @@ import {
   IntegralSimState,
   DefiniteIntegralSimState,
   DifferentialEqSimState,
-  DifferentialEq2SimState
+  DifferentialEq2SimState,
+  ProbabilitySimState,
+  FunctionVariationSimState
 } from "./types";
 import MathSim from "./components/MathSim";
 import PhysicsSim from "./components/PhysicsSim";
@@ -28,6 +30,8 @@ import IntegralSim from "./components/IntegralSim";
 import DefiniteIntegralSim from "./components/DefiniteIntegralSim";
 import DifferentialEqSim from "./components/DifferentialEqSim";
 import DifferentialEq2Sim from "./components/DifferentialEq2Sim";
+import ProbabilitySim from "./components/ProbabilitySim";
+import FunctionVariationSim from "./components/FunctionVariationSim";
 import AiAssistant from "./components/AiAssistant";
 import { 
   Compass, 
@@ -46,7 +50,7 @@ import {
 
 export default function App() {
   const [activeSubject, setActiveSubject] = useState<SubjectType>("math");
-  const [mathSubTopic, setMathSubTopic] = useState<"trig" | "complex" | "limits" | "continuity" | "derivative" | "derivative_app" | "integral" | "definite_integral" | "differential_eq" | "differential_eq2">("trig");
+  const [mathSubTopic, setMathSubTopic] = useState<"trig" | "complex" | "limits" | "continuity" | "derivative" | "derivative_app" | "integral" | "definite_integral" | "differential_eq" | "differential_eq2" | "probability" | "function_variation">("trig");
   const [triggerExplainCount, setTriggerExplainCount] = useState<number>(0);
 
   // 1. Mathematics Initial State
@@ -160,6 +164,23 @@ export default function App() {
     param2: 1.0,
   });
 
+  // 14. Probability Initial State
+  const [probabilityState, setProbabilityState] = useState<ProbabilitySimState>({
+    mode: "decision",
+    xVal: 50,
+    param2: 50,
+    is3d: false,
+  });
+
+  // 15. Function Variation Initial State
+  const [functionVariationState, setFunctionVariationState] = useState<FunctionVariationSimState>({
+    mode: "logarithmic",
+    paramA: 1.5,
+    paramB: 0.0,
+    paramC: 1.0,
+    is3d: false,
+  });
+
   // Get active simulation parameters for AI context
   const getActiveSimulationData = () => {
     switch (activeSubject) {
@@ -173,6 +194,8 @@ export default function App() {
         if (mathSubTopic === "definite_integral") return definiteIntegralState;
         if (mathSubTopic === "differential_eq") return differentialEqState;
         if (mathSubTopic === "differential_eq2") return differentialEq2State;
+        if (mathSubTopic === "probability") return probabilityState;
+        if (mathSubTopic === "function_variation") return functionVariationState;
         return derivativeState;
       case "physics":
         return physicsState;
@@ -421,6 +444,40 @@ export default function App() {
               <Activity className="w-3.5 h-3.5 text-rose-400" />
               សមីការឌីផេរ៉ង់ស្យែលទី២ (Differential Eq 2)
             </button>
+            <button
+              id="subtab-probability"
+              onClick={() => setMathSubTopic("probability")}
+              className={`flex items-center gap-2 px-4 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 border ${
+                mathSubTopic === "probability"
+                  ? "bg-cyan-500/30 text-cyan-300 border-cyan-400/40 shadow-[0_0_12px_rgba(6,182,212,0.2)]"
+                  : "bg-transparent text-slate-300 border-transparent hover:text-white hover:bg-white/5 hover:border-cyan-500/60"
+              }`}
+            >
+              <Activity className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />
+              <span>ប្រូបាបនៃអនុគមន៍ (Probability)</span>
+              <span className="flex h-1.5 w-1.5 relative">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-cyan-500"></span>
+              </span>
+              <span className="text-[8px] bg-cyan-500/20 text-cyan-300 px-1 py-0.2 rounded border border-cyan-500/30 font-mono tracking-wider">3D/2D</span>
+            </button>
+            <button
+              id="subtab-function-variation"
+              onClick={() => setMathSubTopic("function_variation")}
+              className={`flex items-center gap-2 px-4 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 border ${
+                mathSubTopic === "function_variation"
+                  ? "bg-cyan-500/30 text-cyan-300 border-cyan-400/40 shadow-[0_0_12px_rgba(6,182,212,0.2)]"
+                  : "bg-transparent text-slate-300 border-yellow-500/40 hover:text-white hover:bg-white/5 hover:border-yellow-500/60 shadow-[0_0_8px_rgba(234,179,8,0.25)] animate-pulse"
+              }`}
+            >
+              <TrendingUp className="w-3.5 h-3.5 text-yellow-400" />
+              <span>សិក្សាអថេរភាព និងក្រាប (Variation & Graphing)</span>
+              <span className="flex h-1.5 w-1.5 relative">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-yellow-500"></span>
+              </span>
+              <span className="text-[8px] bg-yellow-500/20 text-yellow-300 px-1 py-0.2 rounded border border-yellow-500/30 font-mono tracking-wider">3D/2D</span>
+            </button>
           </div>
         )}
 
@@ -503,6 +560,20 @@ export default function App() {
                 onExplainRequest={handleExplainRequest} 
               />
             )}
+            {activeSubject === "math" && mathSubTopic === "probability" && (
+              <ProbabilitySim 
+                state={probabilityState} 
+                onChange={setProbabilityState} 
+                onExplainRequest={handleExplainRequest} 
+              />
+            )}
+            {activeSubject === "math" && mathSubTopic === "function_variation" && (
+              <FunctionVariationSim 
+                state={functionVariationState} 
+                onChange={setFunctionVariationState} 
+                onExplainRequest={handleExplainRequest} 
+              />
+            )}
             
             {activeSubject === "physics" && (
               <PhysicsSim 
@@ -541,6 +612,10 @@ export default function App() {
                   ? "continuity"
                   : activeSubject === "math" && mathSubTopic === "derivative"
                   ? "derivative"
+                  : activeSubject === "math" && mathSubTopic === "probability"
+                  ? "probability"
+                  : activeSubject === "math" && mathSubTopic === "function_variation"
+                  ? "function_variation"
                   : activeSubject
               } 
               simulationData={getActiveSimulationData()} 

@@ -1,4 +1,4 @@
-export type SubjectType = "math" | "physics" | "chemistry" | "biology" | "complex" | "limits" | "continuity" | "derivative" | "integral" | "definite_integral" | "differential_eq" | "differential_eq2";
+export type SubjectType = "math" | "physics" | "chemistry" | "biology" | "complex" | "limits" | "continuity" | "derivative" | "integral" | "definite_integral" | "differential_eq" | "differential_eq2" | "probability" | "function_variation";
 
 export interface ExplanationResponse {
   explanation: string;
@@ -109,6 +109,22 @@ export interface DifferentialEq2SimState {
   xVal: number; // For example, damping coefficient
   param2: number;
 }
+
+export interface ProbabilitySimState {
+  mode: "decision" | "risk" | "randomness" | "ai_science" | "applications";
+  xVal: number; // e.g., mean or threshold or samples
+  param2: number; // e.g., standard deviation or probability
+  is3d: boolean; // toggle 2D vs 3D rendering
+}
+
+export interface FunctionVariationSimState {
+  mode: "logarithmic" | "exponential" | "rational";
+  paramA: number; // Base, growth rate, or scaling coefficient
+  paramB: number; // Vertical shift, horizontal shift, or horizontal asymptote coeff
+  paramC: number; // Shift/offset or auxiliary parameters
+  is3d: boolean;
+}
+
 
 
 
