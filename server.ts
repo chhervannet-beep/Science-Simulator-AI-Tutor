@@ -113,7 +113,7 @@ CRITICAL INSTRUCTIONS:
 
       limits: `### ការពន្យល់អំពី លីមីត និងគ្រឹះគណនា (Limits & Calculus Explanation)
 
-* **របៀបសិក្សាបច្ចុប្បន្ន (Current Mode)**៖ របៀប "\select simulationData.mode || "integral"}"។
+* **របៀបសិក្សាបច្ចុប្បន្ន (Current Mode)**៖ របៀប "\${simulationData.mode || "integral"}"។
 * **គំនិតចម្បងនៃលីមីត (Core Concept of Limit)៖**
   - **លីមីត (Limits)** ជួយយើងសិក្សាពីតម្លៃនៃអនុគមន៍ f(x) នៅពេល x ទៅជិតតម្លៃ a ណាមួយ ទោះបីជានៅត្រង់ a អនុគមន៍គ្មានន័យ (ដូចជាទម្រង់ 0/0) ក៏ដោយ។
   - វាក្លាយជាគ្រឹះដ៏សំខាន់សម្រាប់ **ដេរីវេ (Derivative - lim h→0 Δy/Δh)** និង **អាំងតេក្រាល (Integral - lim N→∞ Σf(xi)Δx)**。
